@@ -78,9 +78,11 @@ async function signIn(_context: BrowserContext, _url: string, _theme: Theme): Pr
 // ADAPT(preview-host): this project's Vercel preview hosts, the only hosts the
 // bypass secret is ever sent to. Vercel names them `<project>-<hash>-<team>` and
 // `<project>-git-<branch>-<team>`; read both parts from a real preview URL of
-// the repo. Keep the project and the team in it: anyone can deploy to
-// `*.vercel.app`.
-const PREVIEW_HOST = /^my-app-[a-z0-9-]+-my-team\.vercel\.app$/;
+// the repo. Keep the project, the hash-or-branch shape and the team in it:
+// anyone can deploy to `*.vercel.app`, so a looser pattern hands the secret to
+// a look-alike. A name pattern narrows the risk without closing it; an exact
+// host list is the stricter choice for a repo that wants it.
+const PREVIEW_HOST = /^my-app-(?:git-[a-z0-9-]+|[a-z0-9]+)-my-team\.vercel\.app$/;
 
 export const DEFAULT_WIDTH = 1440;
 const VIEWPORT_HEIGHT = 900;
