@@ -12,9 +12,11 @@ import {
   videoTarget,
 } from "../scripts/preview-record";
 
-// ADAPT(names): a preview host of this project, and the default theme.
-const PREVIEW = "https://my-app-git-feat-x-team.vercel.app";
-const PREVIEW_HOST = "my-app-git-feat-x-team.vercel.app";
+// ADAPT(names): a preview host of this project (matching PREVIEW_HOST), one of
+// another team on the same platform, and the default theme.
+const PREVIEW = "https://my-app-git-feat-x-my-team.vercel.app";
+const PREVIEW_HOST = "my-app-git-feat-x-my-team.vercel.app";
+const FOREIGN_PREVIEW = "https://my-app-git-feat-x-someone-else.vercel.app";
 const THEME = "light";
 
 describe("parseRecordArgs", () => {
@@ -95,7 +97,7 @@ describe("parseRecordArgs", () => {
 describe("bypassSecretFor", () => {
   const env = { VERCEL_AUTOMATION_BYPASS_SECRET: "s3cret" };
 
-  it("sends the secret to a Vercel deployment over https", () => {
+  it("sends the secret to this project's previews over https", () => {
     assert.equal(bypassSecretFor(`${PREVIEW}/`, env), "s3cret");
   });
 
@@ -104,6 +106,9 @@ describe("bypassSecretFor", () => {
     assert.equal(bypassSecretFor("http://localhost:3000/", env), undefined);
     assert.equal(bypassSecretFor(`http://${PREVIEW_HOST}/`, env), undefined);
     assert.equal(bypassSecretFor("https://vercel.app.evil.example/", env), undefined);
+    // Someone else's deployments, on Vercel all the same.
+    assert.equal(bypassSecretFor("https://evil-app.vercel.app/", env), undefined);
+    assert.equal(bypassSecretFor(`${FOREIGN_PREVIEW}/`, env), undefined);
   });
 
   it("is absent when unset", () => {

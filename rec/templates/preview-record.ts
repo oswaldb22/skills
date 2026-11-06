@@ -26,7 +26,8 @@
  * preview) and the PR's preview; the host is in the file name, so the two do
  * not overwrite each other.
  *
- * Vercel Authentication: when the base URL is an https://*.vercel.app host and
+ * Vercel Authentication: when the base URL is one of this project's previews
+ * (PREVIEW_HOST below) and
  * VERCEL_AUTOMATION_BYPASS_SECRET is set (.env.local or the environment, never
  * printed), the secret goes as `x-vercel-protection-bypass` on one request to
  * that host, which trades it for a cookie. No other host and no page request
@@ -73,6 +74,13 @@ const LOADING_SELECTOR: string | undefined = undefined;
  * A public site leaves it empty.
  */
 async function signIn(_context: BrowserContext, _url: string, _theme: Theme): Promise<void> {}
+
+// ADAPT(preview-host): this project's Vercel preview hosts, the only hosts the
+// bypass secret is ever sent to. Vercel names them `<project>-<hash>-<team>` and
+// `<project>-git-<branch>-<team>`; read both parts from a real preview URL of
+// the repo. Keep the project and the team in it: anyone can deploy to
+// `*.vercel.app`.
+const PREVIEW_HOST = /^my-app-[a-z0-9-]+-my-team\.vercel\.app$/;
 
 export const DEFAULT_WIDTH = 1440;
 const VIEWPORT_HEIGHT = 900;
@@ -204,16 +212,17 @@ export function parseRecordArgs(argv: string[]): RecordRequest {
 }
 
 /**
- * The bypass secret, only for a Vercel deployment over https. The secret opens
- * every preview of the project, and the base URL is whatever was typed, so any
- * other host gets no bypass request at all.
+ * The bypass secret, only for one of this project's previews over https. The
+ * secret opens every preview of the project, and the base URL is whatever was
+ * typed, so any other host — another project's `*.vercel.app` included — gets
+ * no bypass request at all.
  */
 export function bypassSecretFor(
   url: string,
   env: Record<string, string | undefined>,
 ): string | undefined {
   const { protocol, hostname } = new URL(url);
-  if (protocol !== "https:" || !hostname.endsWith(".vercel.app")) return undefined;
+  if (protocol !== "https:" || !PREVIEW_HOST.test(hostname)) return undefined;
   return env.VERCEL_AUTOMATION_BYPASS_SECRET || undefined;
 }
 

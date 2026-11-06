@@ -20,6 +20,7 @@ Answer each `ADAPT` block from the repo's own files, citing the file that settle
 - **overlays**: what covers every frame and is not the subject: cookie or consent banner, preview toolbar, chat widget, dev overlay. Selector into `HIDE_CSS`; a widget with no stable selector goes into `HIDE_TEXT` by its visible text.
 - **loading**: the loading placeholder component (skeleton, spinner) and the selector that matches it, or none.
 - **sign-in**: whether the routes worth recording sit behind auth, and the provider's documented testing path (Clerk `@clerk/testing`, Auth.js credentials, a seeded test user). Public site → leave `signIn` empty.
+- **preview-host**: the project and team parts of the repo's Vercel preview URLs (a deployment link on a recent PR, or the Vercel project settings). No Vercel previews → leave the pattern matching nothing you deploy.
 - **runner**: the test runner, the package manager, how scripts run TypeScript (`tsx`, `node --experimental-strip-types`), and the Node version the repo pins.
 
 Also read the repo's agent docs (`AGENTS.md`, `CLAUDE.md`, contribution rules) for formatting, test and commit conventions; they override this skill.
